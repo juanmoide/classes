@@ -13,9 +13,18 @@ case object SAILING extends Actions
 trait Engine {
     var status: Option[Actions] = None
     def changeStatus(act: Actions): Unit = act match {
-        case DRIVING => status = Option(DRIVING)
-        case FLYING => status = Option(FLYING)
-        case SAILING => status = Option(SAILING)
+        case DRIVING => {
+            status = Option(DRIVING)
+            println("You are driving!")
+        }
+        case FLYING => {
+            status = Option(FLYING)
+            println("You are flying!")
+        }
+        case SAILING => {
+            status = Option(SAILING)
+            println("You are sailing!")
+        }
     }
 
     def turnOff(): Unit = status match {
