@@ -4,87 +4,41 @@
 // Create everithing we need to create the class ChittyChittyBangBang
 // that has to be able to do those actions
 
-object Actions extends Enumeration {
-    val FLYING, DRIVING, SAILING = Value
+sealed trait Actions 
+
+case object FLYING extends Actions
+case object DRIVING extends Actions
+case object SAILING extends Actions
+
+trait Engine {
+    var status: Option[Actions] = None
+    def changeStatus(act: Actions): Unit = act match {
+        case DRIVING => status = Option(DRIVING)
+        case FLYING => status = Option(FLYING)
+        case SAILING => status = Option(SAILING)
+    }
 }
 
-trait Transformer extends Car with Plane with Ship {
-    protected var poweredEngine = false
-    protected var action: Actions.Value = Actions.DRIVING // Default action when its engine is turned on
+trait Car extends Engine {
+    def drive(): Unit = changeStatus(DRIVING)
 }
 
-trait Car {
-    def drive;
+trait Plane extends Engine {
+    def fly(): Unit = changeStatus(FLYING)
 }
 
-trait Plane {
-    def fly;
-}
-
-trait Ship {
-    def sail;
+trait Ship extends Engine{
+    def sail(): Unit = changeStatus(SAILING)
 }
 
 
-class ChittyChittyBangBang extends Transformer {
-    
-    // Only affects in those status that requires the engine has to be turned on
-    private def statusOnEngine(act: Actions.Value): Unit = {
-        if(poweredEngine == true) {
-            action = act
-            act match {
-                case Actions.DRIVING => println("You are driving!")
-                case Actions.FLYING => println("You are flying!")
-                case Actions.SAILING => println("You are sailing!")
-            }
-        } else {
-            println("The engine is turned off")
-            act match {
-                case Actions.DRIVING => println("You cannot drive!")
-                case Actions.FLYING => println("You cannot fly!")
-                case Actions.SAILING => println("You cannot sail!")
-            }
-        }
+class ChittyChittyBangBang extends Car with Plane with Ship {
+    def getStatus() = status match {
+        case None => println("The engine is turned off")
+        case Some(DRIVING) => println("Driving!")
+        case Some(FLYING) => println("Flying!")
+        case Some(SAILING) => println("Sailing!")
     }
-
-    private def changeStatus(act: Actions.Value): Unit = act match {
-        case Actions.DRIVING => statusOnEngine(act)
-        case Actions.FLYING => statusOnEngine(act)
-        case Actions.SAILING => statusOnEngine(act)
-    }
-
-    def stop(): Unit = {
-        if (poweredEngine == false) {
-            return println("The engine is already off")
-        }
-
-        poweredEngine = false
-        action = Actions.DRIVING
-        println("The engine is turned off!")
-    }
-
-    def run(): Unit = {
-        if (poweredEngine == true) {
-            return println("The engine is already on")
-        }
-
-        poweredEngine == true
-        println("The engine is turned on!")
-    }
-
-    def drive(): Unit = changeStatus(Actions.DRIVING)
-    
-    def fly(): Unit = changeStatus(Actions.FLYING)
-    
-    def sail(): Unit = changeStatus(Actions.SAILING)
-
-    
-    def status(): Unit = action match {
-        case Actions.DRIVING => println("Driving!")
-        case Actions.FLYING => println("Flying!")
-        case Actions.SAILING => println("Sailing!")
-    }
-
 }
 
 object MainObject extends App {
